@@ -1,0 +1,53 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © acryptomanqk
+
+//@version=5
+indicator("Rise/Fall of Three Methods", overlay = true)
+
+firstCandleOpen = open[4]
+firstCandleClose = close[4]
+lastCandleOpen = open
+lastCandleClose = close
+
+currCandleOpen = open
+currCandleClose = close
+
+isValid = false
+
+// If the last candle is bullish
+if lastCandleClose > lastCandleOpen
+    for i = 1 to 3
+        currCandleOpen := open[i]
+        currCandleClose := close[i]
+
+        // If one of the candles is bullish then its invalidated
+        if currCandleClose > currCandleOpen
+            isValid := false
+            break
+
+        if lastCandleOpen < currCandleOpen and lastCandleClose > currCandleOpen and firstCandleOpen < currCandleClose and firstCandleClose > currCandleClose
+            isValid := true
+        else
+            isValid := false
+            break
+// If the last candle is bearish
+else
+    for i = 1 to 3
+        currCandleOpen := open[i]
+        currCandleClose := close[i] 
+
+        // If one of the 3 candles is bearish then its invalidated
+        if currCandleClose < currCandleOpen
+            isValid := false
+            break
+
+        if lastCandleOpen > currCandleOpen and lastCandleClose <= currCandleOpen and firstCandleOpen >= currCandleClose and firstCandleClose < currCandleClose
+            isValid := true
+        else
+            isValid := false
+            break
+
+alertcondition(isValid, "Three Method Alert", "Three Method Detected on {{ticker}}")
+
+
+bgcolor(isValid ? color.new(color.blue, 30) : na)
